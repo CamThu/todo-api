@@ -1,6 +1,7 @@
 var express = require ('express');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
+const { filter } = require('underscore');
 
 var app = express ();
 var PORT = process.env.PORT || 3000;
@@ -23,8 +24,16 @@ app.get('/todos', function (req, res){
 	var filteredTodos = todos;
 		if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true'){
 			filteredTodos = _.where(filteredTodos, {completed: true});
-		}else  if (queryParams.hasOwnProperty('completed') && queryParams.completed ==='false')
+		}else  if (queryParams.hasOwnProperty('completed') && queryParams.completed ==='false'){
 			filteredTodos = _.where(filteredTodos, {completed: false});
+		}
+
+		if(queryParams.hasOwnProperty('q') &&  queryParams.q.length >0){
+
+			filteredTodos=_.filter(filteredTodos, function (todo) {
+				return todo.description. toLowerCase().indexOf(queryParams.q.toLocaleLowerCase()) > -1;
+			});
+		}
 
 	res.json(filteredTodos);
 
